@@ -43,16 +43,24 @@ tabsParent.addEventListener('click', (event) => {
 
 // Timer
 
- const deadline = '2022-12-31';
+ const deadline = '2022-12-27';
 
 function getTimeRemaining(endtime) {
+    let days, hours, minutes, seconds;
+    const t = Date.parse(endtime) - Date.parse(new Date());
 
-    const t = Date.parse(endtime) - Date.parse(new Date()),
+     if (t <=0) {
+        days = 0;
+        hours = 0;
+        minutes = 0;
+        seconds = 0;
+     } else {
         days = Math.floor( t/(1000*60*60*24 )),
         hours = Math.floor((t/(1000*60*60) % 24)),
         minutes = Math.floor((t/1000/60) % 60),
         seconds = Math.floor ((t/1000) % 60);
-        
+     }
+
         return {
             'total': t,
             'days': days,
@@ -97,4 +105,25 @@ function setClock(selector, endtime) {
 }
 
    setClock('.timer', deadline);
+
+   // Modal
+   const modalTrigger = document.querySelector('[data-modal]'),
+         modal = document.querySelector('.modal'),
+         modalCloseBtn = document.querySelector('[data-close]');  
+         
+         modalTrigger.addEventListener('click', () => {
+            modal.classList.add('show');
+            modal.classList.remove('hide');
+            // скрыть скролл страницы
+            document.body.style.overflow = 'hidden'; 
+         });
+
+         modalCloseBtn.addEventListener('click', () => {
+            modal.classList.add('hide');
+            modal.classList.remove('show');
+            document.body.style.overflow = '';
+         });
+
 });
+
+
