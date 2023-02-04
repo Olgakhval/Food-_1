@@ -234,7 +234,7 @@ function setClock(selector, endtime) {
 
     const forms = document.querySelectorAll('form');
     const message = {
-        loading: "Загрузка",
+        loading: "img/form/spinner.svg",
         success: 'Спасибо, скоро мы с вами свяжемся',
         failure: 'Что-то пошло не так'
     }
@@ -247,10 +247,13 @@ function setClock(selector, endtime) {
         form.addEventListener ('submit', (e) => {
             e.preventDefault();
 
-            let statusMessage = document.createElement('div');
-            statusMessage.classList.add ('status');
-            statusMessage.textContent = message.loading;
-            form.appendChild(statusMessage);
+            const statusMessage = document.createElement('img');
+            statusMessage.src = message.loading;
+            statusMessage.style.cssText = `
+                display: block;
+                margin: 0 auto;
+            `;
+            form.insertAdjacentElememt('afterend', statusMessage);
 
 
             const request = new XMLHttpRequest();
@@ -271,18 +274,53 @@ function setClock(selector, endtime) {
             request.addEventListener('load', () => {
                 if(request.status === 200) {
                     console.log(request.response);
-                    statusMessage.textContent = message.success;
+                    showThanksModal(message.success);
                     form.reset();
-                    setTimeout(() => {
-                        statusMessage.remove();
-                    }, 2000)
+                    statusMessage.remove();   
                 } else {
-                    statusMessage.textContent = message.failure;
+                    showThanksModal(message.failure);
                 }
             });
 
         });
     }
+
+    function showThanksModal(message) {
+       const prevModalDialog = document.querySelector('.modal__dialog');
+
+       prevModalDialog.classList.add('hide');
+       openModal();
+
+       const thanksModal = document.createElement('div');
+       thanksModal.classList.add('modal__dialog');
+       thanksModal.innerHTML = `
+       <div class="modal__content">
+            <div class="modal__close" data-close>×</div>
+            <div class="modal__title"></div>
+       </div>
+       `;
+
+       document.querySelector('.modal').append(thanksModal);
+       setTimeout(() => {
+        thanksModal.remove();
+        prevModalDialog.classList.add('show');
+        prevModalDialog.classList.remove('hide');
+        closeModal();
+       }, 4000)
+    }
+    fetch('https://jsonplaceholder.typicode.com/posts', {
+        method: "POST",
+        body: JSON.stringify({name: 'Alex'}),
+        headers: {
+            'Content-type': 'application/json'
+        }
+    })
+    .then(response => response.json())
+    .then(json => console.log(json))
+
+    // fetch('https://jsonplaceholder.typicode.com/todos/1')
+    // .then(response => response.json())
+    // .then(json => console.log(json));
 
 });
 
